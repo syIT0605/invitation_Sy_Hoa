@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
@@ -34,6 +34,48 @@ export function InvitationShell({
         .catch(() => undefined);
     }
   };
+
+  // Tự động cuộn chậm xuống sau khi mở thiệp — dừng ngay khi khách tự cuộn/chạm/bấm phím.
+  useEffect(() => {
+    if (!opened) return;
+
+    const SPEED_PX_PER_FRAME = 0.6;
+    let rafId = 0;
+    let cancelled = false;
+
+    const stop = () => {
+      if (cancelled) return;
+      cancelled = true;
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("wheel", stop);
+      window.removeEventListener("touchstart", stop);
+      window.removeEventListener("keydown", stop);
+    };
+
+    window.addEventListener("wheel", stop, { passive: true });
+    window.addEventListener("touchstart", stop, { passive: true });
+    window.addEventListener("keydown", stop);
+
+    const step = () => {
+      if (cancelled) return;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      if (window.scrollY >= maxScroll - 2) {
+        stop();
+        return;
+      }
+      window.scrollBy(0, SPEED_PX_PER_FRAME);
+      rafId = requestAnimationFrame(step);
+    };
+
+    const startTimeout = setTimeout(() => {
+      rafId = requestAnimationFrame(step);
+    }, 900);
+
+    return () => {
+      clearTimeout(startTimeout);
+      stop();
+    };
+  }, [opened]);
 
   const toggleMusic = () => {
     const audio = audioRef.current;
@@ -73,12 +115,12 @@ export function InvitationShell({
               />
 
               {coverImage ? (
-                <div className="relative mx-auto -mt-20 mb-5 h-28 w-28">
+                <div className="relative mx-auto -mt-28 mb-5 h-40 w-40">
                   <div className="relative h-full w-full overflow-hidden rounded-full shadow-lg ring-4 ring-[var(--color-cream)]">
-                    <Image src={coverImage} alt="Ảnh cưới" fill sizes="112px" className="object-cover" />
+                    <Image src={coverImage} alt="Ảnh cưới" fill sizes="160px" className="object-cover" priority />
                   </div>
-                  <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-rose-700 text-white shadow">
-                    <Heart size={14} fill="white" />
+                  <div className="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-rose-700 text-white shadow">
+                    <Heart size={16} fill="white" />
                   </div>
                 </div>
               ) : (

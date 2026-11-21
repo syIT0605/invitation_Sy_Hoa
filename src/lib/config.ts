@@ -59,7 +59,7 @@ export const weddingConfig = {
       title: "Lễ Thành Hôn",
       description: "Nhà trai tổ chức tiệc mừng",
       date: "2026-12-14T14:00:00+07:00",
-      venueName: "Trung tâm Hội nghị Tiệc cưới Hoa Hồng",
+      venueName: "Tư gia nhà trai",
       address: "Thôn 16a, xã Ea Nuôl, tỉnh Đăk Lăk",
       mapUrl: "https://maps.app.goo.gl/EA6W4HES3qypRnng7",
       guestArrivalTime: "9:30",

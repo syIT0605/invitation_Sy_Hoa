@@ -37,7 +37,7 @@ export default async function Home({
       coverImage={images[0]?.url}
     >
       <div className="flex-1">
-        <Hero guestName={guest?.name} />
+        <Hero guestName={guest?.name} heroImage={images[0]?.url} />
         <StoryTimeline />
         <WeddingAnnouncement />
 

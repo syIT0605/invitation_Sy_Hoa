@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { weddingConfig } from "@/lib/config";
@@ -5,7 +6,7 @@ import { FloatingPetals } from "./floating-petals";
 import { FloralSpray } from "./floral-spray";
 import { Countdown } from "./countdown";
 
-export function Hero({ guestName }: { guestName?: string }) {
+export function Hero({ guestName, heroImage }: { guestName?: string; heroImage?: string }) {
   const date = new Date(weddingConfig.weddingDate);
 
   return (
@@ -18,7 +19,22 @@ export function Hero({ guestName }: { guestName?: string }) {
       />
 
       <div className="relative z-10 animate-fade-in-up">
-        <p className="mb-4 text-xs uppercase tracking-[0.3em] text-rose-500">Save The Date</p>
+        <p className="mb-5 text-xs uppercase tracking-[0.3em] text-rose-500">Save The Date</p>
+
+        {heroImage && (
+          <div className="relative mx-auto mb-6 w-64 rotate-[-2deg] rounded-sm bg-white p-2 pb-5 shadow-xl sm:w-80">
+            <div className="relative aspect-[4/5] w-full overflow-hidden">
+              <Image
+                src={heroImage}
+                alt="Ảnh cưới"
+                fill
+                sizes="(max-width: 640px) 256px, 320px"
+                className="object-cover"
+                priority
+              />
+            </div>
+          </div>
+        )}
 
         <h1 className="font-heading text-4xl font-semibold leading-tight text-rose-800 sm:text-6xl">
           {weddingConfig.groom.shortName}

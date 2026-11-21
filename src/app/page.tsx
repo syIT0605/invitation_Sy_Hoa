@@ -29,7 +29,13 @@ export default async function Home({
     }),
   ]);
 
-  const receptionEvents = weddingConfig.events.slice(1);
+  // Lọc sự kiện theo "bên" của khách (Nhà trai / Nhà gái / Chung) — khách không
+  // có link riêng hoặc thuộc "Chung" sẽ thấy tất cả.
+  const guestSide = guest?.side ?? "BOTH";
+  const visibleEvents = weddingConfig.events.filter(
+    (e) => !e.side || e.side === "BOTH" || guestSide === "BOTH" || e.side === guestSide
+  );
+  const [ceremonyEvent, ...receptionEvents] = visibleEvents;
 
   return (
     <InvitationShell
@@ -39,7 +45,7 @@ export default async function Home({
       <div className="flex-1">
         <Hero guestName={guest?.name} heroImage={images[0]?.url} />
         <StoryTimeline />
-        <WeddingAnnouncement />
+        <WeddingAnnouncement event={ceremonyEvent} />
 
         <GalleryPreview images={images.map((i) => ({ id: i.id, url: i.url, caption: i.caption }))} />
 

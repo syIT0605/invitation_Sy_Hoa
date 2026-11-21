@@ -26,6 +26,9 @@ export type WeddingEvent = {
   // Chỉ dùng cho tiệc cưới (card có lịch + bản đồ + nút xác nhận).
   guestArrivalTime?: string; // "Đón khách"
   banquetTime?: string; // "Khai tiệc"
+  // Sự kiện chỉ hiện cho khách bên này (dựa vào "side" khi thêm khách ở Admin).
+  // Để trống (hoặc "BOTH") = hiện cho mọi khách.
+  side?: "GROOM" | "BRIDE" | "BOTH";
 };
 
 export const weddingConfig = {
@@ -42,9 +45,22 @@ export const weddingConfig = {
   } as PersonInfo,
   // Dùng cho countdown & hiển thị ngày cưới
   weddingDate: "2026-12-12T10:00:00+07:00",
-  // Sự kiện đầu tiên = lễ thành hôn (thiệp trang trọng, không có lịch/bản đồ).
-  // Các sự kiện sau = tiệc cưới (có lịch, bản đồ, nút xác nhận tham dự).
+  // Sự kiện đầu tiên (sau khi lọc theo "side" của khách) = lễ thành hôn
+  // (thiệp trang trọng, không có lịch/bản đồ). Các sự kiện sau = tiệc cưới
+  // (có lịch, bản đồ, nút xác nhận tham dự).
+  // `side: "BRIDE"` → chỉ khách nhà gái thấy; `side: "GROOM"` → chỉ khách nhà
+  // trai thấy; để trống hoặc "BOTH" → ai cũng thấy.
   events: [
+    {
+      id: "nha-gai",
+      title: "Lễ Vu Quy",
+      description: "Nhà gái tổ chức tiệc mừng",
+      date: "2026-12-14T08:00:00+07:00", // TODO: chỉnh đúng giờ lễ Vu Quy
+      venueName: "Tư gia nhà gái",
+      address: "TODO: điền địa chỉ nhà gái",
+      mapUrl: "TODO: điền link Google Maps nhà gái",
+      side: "BRIDE",
+    },
     {
       id: "nha-trai",
       title: "Lễ Thành Hôn",
@@ -53,8 +69,7 @@ export const weddingConfig = {
       venueName: "Tư gia nhà trai",
       address: "Thôn 16a, xã Ea Nuôl, tỉnh Đăk Lăk",
       mapUrl: "https://maps.app.goo.gl/EA6W4HES3qypRnng7",
-      // address: "Thôn 01, xã EaWer, tỉnh Đăk Lăk",
-      // mapUrl: "https://maps.app.goo.gl/WJt58bfWbpJiziue9",
+      side: "GROOM",
     },
     {
       id: "nha-trai-tiec",
@@ -66,6 +81,7 @@ export const weddingConfig = {
       mapUrl: "https://maps.app.goo.gl/EA6W4HES3qypRnng7",
       guestArrivalTime: "9:30",
       banquetTime: "11:00",
+      side: "GROOM",
     },
   ] as WeddingEvent[],
   siteTitle: "S & H — Thiệp Cưới Online",

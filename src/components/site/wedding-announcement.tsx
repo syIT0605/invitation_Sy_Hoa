@@ -1,13 +1,12 @@
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
-import { weddingConfig } from "@/lib/config";
+import { weddingConfig, type WeddingEvent } from "@/lib/config";
 import { FloralSpray } from "./floral-spray";
 
-export function WeddingAnnouncement() {
-  const ceremony = weddingConfig.events[0];
-  if (!ceremony) return null;
+export function WeddingAnnouncement({ event }: { event?: WeddingEvent }) {
+  if (!event) return null;
 
-  const date = new Date(ceremony.date);
+  const date = new Date(event.date);
   const { groom, bride } = weddingConfig;
 
   return (
@@ -36,7 +35,7 @@ export function WeddingAnnouncement() {
           <p className="mx-auto mt-6 max-w-xs text-xs uppercase leading-relaxed tracking-wide text-white/70">
             Trân trọng báo tin
             <br />
-            lễ thành hôn của con chúng tôi
+            {event.title.toLowerCase()} của con chúng tôi
           </p>
 
           <p className="mt-6 font-heading text-3xl">{groom.fullName}</p>
@@ -56,9 +55,9 @@ export function WeddingAnnouncement() {
           )}
 
           <p className="mx-auto mt-7 max-w-xs text-xs uppercase leading-relaxed tracking-wide text-white/70">
-            Lễ thành hôn được cử hành tại
+            {event.title} được cử hành tại
             <br />
-            {ceremony.venueName}
+            {event.venueName}
           </p>
 
           <div className="mt-5 flex items-center justify-center gap-3 text-xs uppercase tracking-wide text-white/70">
@@ -76,9 +75,9 @@ export function WeddingAnnouncement() {
             </span>
           </div>
 
-          {ceremony.lunarDate && (
+          {event.lunarDate && (
             <p className="mt-4 text-[11px] uppercase tracking-wide text-white/50">
-              (Tức {ceremony.lunarDate})
+              (Tức {event.lunarDate})
             </p>
           )}
         </div>

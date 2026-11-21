@@ -1,5 +1,12 @@
 import { weddingConfig } from "@/lib/config";
 
+function parentLine(relation: "Con trai" | "Con gái", father?: string, mother?: string) {
+  if (father && mother) return `${relation} của ${father} và ${mother}`;
+  if (father) return `${relation} của ${father}`;
+  if (mother) return `${relation} của ${mother}`;
+  return null;
+}
+
 export function CoupleIntro() {
   const { groom, bride } = weddingConfig;
 
@@ -16,9 +23,7 @@ export function CoupleIntro() {
             <p className="font-script text-3xl text-rose-600">{groom.fullName}</p>
             <p className="mt-1 text-sm uppercase tracking-wide text-stone-400">Chú rể</p>
             <p className="mt-4 text-sm text-stone-600">
-              Con trai ông {groom.father}
-              <br />
-              và bà {groom.mother}
+              {parentLine("Con trai", groom.father, groom.mother)}
             </p>
           </div>
 
@@ -26,9 +31,7 @@ export function CoupleIntro() {
             <p className="font-script text-3xl text-rose-600">{bride.fullName}</p>
             <p className="mt-1 text-sm uppercase tracking-wide text-stone-400">Cô dâu</p>
             <p className="mt-4 text-sm text-stone-600">
-              Con gái ông {bride.father}
-              <br />
-              và bà {bride.mother}
+              {parentLine("Con gái", bride.father, bride.mother)}
             </p>
           </div>
         </div>

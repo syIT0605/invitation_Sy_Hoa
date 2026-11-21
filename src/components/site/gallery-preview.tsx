@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { GalleryGrid, type GalleryImageItem } from "./gallery-grid";
+import { type GalleryImageItem } from "./gallery-grid";
+import { PhotoSlideshow } from "./photo-slideshow";
 
 export function GalleryPreview({ images }: { images: GalleryImageItem[] }) {
   return (
@@ -10,20 +11,18 @@ export function GalleryPreview({ images }: { images: GalleryImageItem[] }) {
         <div className="mx-auto my-6 h-px w-24 section-divider" />
       </div>
 
-      <div className="mx-auto max-w-4xl">
-        <GalleryGrid images={images.slice(0, 8)} />
+      <PhotoSlideshow images={images} />
 
-        {images.length > 0 && (
-          <div className="mt-8 text-center">
-            <Link
-              href="/gallery"
-              className="inline-block rounded-full border border-rose-300 px-6 py-2.5 text-sm font-medium text-rose-600 transition hover:bg-rose-50"
-            >
-              Xem tất cả ảnh
-            </Link>
-          </div>
-        )}
-      </div>
+      {images.length > 0 && (
+        <div className="mt-8 text-center">
+          <Link
+            href="/gallery"
+            className="inline-block rounded-full border border-rose-300 px-6 py-2.5 text-sm font-medium text-rose-600 transition hover:bg-rose-50"
+          >
+            Xem tất cả ảnh
+          </Link>
+        </div>
+      )}
     </section>
   );
 }

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { type GalleryImageItem } from "./gallery-grid";
 import { PhotoCoverflow } from "./photo-coverflow";
 
@@ -12,17 +11,6 @@ export function GalleryPreview({ images }: { images: GalleryImageItem[] }) {
       </div>
 
       <PhotoCoverflow images={images} />
-
-      {images.length > 0 && (
-        <div className="mt-8 text-center">
-          <Link
-            href="/gallery"
-            className="inline-block rounded-full border border-rose-300 px-6 py-2.5 text-sm font-medium text-rose-600 transition hover:bg-rose-50"
-          >
-            Xem tất cả ảnh
-          </Link>
-        </div>
-      )}
     </section>
   );
 }

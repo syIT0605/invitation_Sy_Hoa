@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import clsx from "clsx";
 import type { GalleryImageItem } from "./gallery-grid";
 
@@ -12,15 +12,16 @@ const AUTOPLAY_MS = 3000;
 export function PhotoCoverflow({ images }: { images: GalleryImageItem[] }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const count = images.length;
 
   const goTo = useCallback((i: number) => setIndex(((i % count) + count) % count), [count]);
 
   useEffect(() => {
-    if (count <= 1 || paused) return;
+    if (count <= 1 || paused || lightboxOpen) return;
     const timer = setInterval(() => setIndex((i) => (i + 1) % count), AUTOPLAY_MS);
     return () => clearInterval(timer);
-  }, [count, paused]);
+  }, [count, paused, lightboxOpen]);
 
   if (count === 0) {
     return (
@@ -29,6 +30,8 @@ export function PhotoCoverflow({ images }: { images: GalleryImageItem[] }) {
       </p>
     );
   }
+
+  const active = images[index];
 
   return (
     <div onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
@@ -49,8 +52,8 @@ export function PhotoCoverflow({ images }: { images: GalleryImageItem[] }) {
             <button
               key={img.id}
               type="button"
-              onClick={() => goTo(i)}
-              aria-label={`Xem ảnh ${i + 1}`}
+              onClick={() => (isActive ? setLightboxOpen(true) : goTo(i))}
+              aria-label={isActive ? "Xem ảnh lớn" : `Xem ảnh ${i + 1}`}
               className="absolute left-1/2 top-1/2 aspect-[3/4] w-52 overflow-hidden rounded-xl shadow-xl ring-4 ring-white transition-all duration-500 ease-out sm:w-60"
               style={{
                 transform: `translate(-50%, -50%) translateX(${translateX}px) scale(${scale}) rotateY(${rotateY}deg)`,
@@ -107,6 +110,72 @@ export function PhotoCoverflow({ images }: { images: GalleryImageItem[] }) {
             ))}
           </div>
         </>
+      )}
+
+      {lightboxOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxOpen(false);
+            }}
+            aria-label="Đóng"
+            className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
+          >
+            <X size={20} />
+          </button>
+
+          {count > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                goTo(index - 1);
+              }}
+              aria-label="Ảnh trước"
+              className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 sm:left-6"
+            >
+              <ChevronLeft size={24} />
+            </button>
+          )}
+
+          <div
+            className="relative aspect-[3/4] w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={active.url}
+              alt={active.caption ?? "Ảnh cưới"}
+              fill
+              sizes="90vw"
+              className="rounded-lg object-contain"
+            />
+          </div>
+
+          {active.caption && (
+            <p className="absolute bottom-6 left-0 right-0 text-center text-sm text-white/80">
+              {active.caption}
+            </p>
+          )}
+
+          {count > 1 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                goTo(index + 1);
+              }}
+              aria-label="Ảnh sau"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 sm:right-6"
+            >
+              <ChevronRight size={24} />
+            </button>
+          )}
+        </div>
       )}
     </div>
   );

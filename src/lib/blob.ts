@@ -1,9 +1,21 @@
-import { del, put } from "@vercel/blob";
+import { BlobError, del, put } from "@vercel/blob";
 
 const MAX_IMAGE_SIZE = 8 * 1024 * 1024; // 8MB
 const MAX_AUDIO_SIZE = 20 * 1024 * 1024; // 20MB
 
 export class BlobValidationError extends Error {}
+
+async function putOrThrowValidationError(pathname: string, file: File) {
+  try {
+    return await put(pathname, file, { access: "public", addRandomSuffix: true });
+  } catch (err) {
+    if (err instanceof BlobError) {
+      // Surface config problems (vd. thiếu BLOB_READ_WRITE_TOKEN) rõ ràng thay vì lỗi chung chung.
+      throw new BlobValidationError(err.message);
+    }
+    throw err;
+  }
+}
 
 export async function uploadGalleryImage(file: File) {
   if (!file.type.startsWith("image/")) {
@@ -14,10 +26,7 @@ export async function uploadGalleryImage(file: File) {
   }
 
   const pathname = `gallery/${Date.now()}-${sanitizeFileName(file.name)}`;
-  const blob = await put(pathname, file, {
-    access: "public",
-    addRandomSuffix: true,
-  });
+  const blob = await putOrThrowValidationError(pathname, file);
 
   return { url: blob.url, pathname: blob.pathname };
 }
@@ -32,10 +41,7 @@ export async function uploadMusicTrack(file: File) {
   }
 
   const pathname = `music/${Date.now()}-${sanitizeFileName(file.name)}`;
-  const blob = await put(pathname, file, {
-    access: "public",
-    addRandomSuffix: true,
-  });
+  const blob = await putOrThrowValidationError(pathname, file);
 
   return { url: blob.url, pathname: blob.pathname };
 }

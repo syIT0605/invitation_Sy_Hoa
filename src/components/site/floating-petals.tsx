@@ -27,7 +27,7 @@ export function FloatingPetals() {
           <svg viewBox="0 0 32 32" fill="none" width="100%" height="100%">
             <path
               d="M16 2C19 8 26 10 30 16C26 22 19 24 16 30C13 24 6 22 2 16C6 10 13 8 16 2Z"
-              fill="#f3a8b8"
+              fill="var(--color-rose-400)"
               opacity="0.85"
             />
           </svg>

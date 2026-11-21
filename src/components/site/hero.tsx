@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { weddingConfig } from "@/lib/config";
 import { FloatingPetals } from "./floating-petals";
+import { FloralSpray } from "./floral-spray";
 import { Countdown } from "./countdown";
 
 export function Hero({ guestName }: { guestName?: string }) {
@@ -10,11 +11,14 @@ export function Hero({ guestName }: { guestName?: string }) {
   return (
     <section className="relative flex min-h-[92vh] flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-rose-50 via-[var(--color-cream)] to-[var(--color-cream)] px-4 text-center">
       <FloatingPetals />
+      <FloralSpray className="pointer-events-none absolute -left-10 top-10 hidden h-56 w-36 opacity-80 sm:block" />
+      <FloralSpray
+        className="pointer-events-none absolute -right-10 top-10 hidden h-56 w-36 opacity-80 sm:block"
+        mirrored
+      />
 
       <div className="relative z-10 animate-fade-in-up">
-        <p className="mb-4 font-script text-2xl text-rose-500 sm:text-3xl">
-          Save The Date
-        </p>
+        <p className="mb-4 text-xs uppercase tracking-[0.3em] text-rose-500">Save The Date</p>
 
         <h1 className="font-heading text-4xl font-semibold leading-tight text-rose-800 sm:text-6xl">
           {weddingConfig.groom.shortName}

@@ -1,14 +1,15 @@
 import { prisma } from "@/lib/db";
+import { weddingConfig } from "@/lib/config";
 import { Hero } from "@/components/site/hero";
-import { CoupleIntro } from "@/components/site/couple-intro";
 import { StoryTimeline } from "@/components/site/story-timeline";
-import { EventDetails } from "@/components/site/event-details";
+import { WeddingAnnouncement } from "@/components/site/wedding-announcement";
+import { ReceptionCard } from "@/components/site/reception-card";
 import { GalleryPreview } from "@/components/site/gallery-preview";
 import { RsvpForm } from "@/components/site/rsvp-form";
 import { WishesWall } from "@/components/site/wishes-wall";
 import { GiftBox } from "@/components/site/gift-box";
 import { Footer } from "@/components/site/footer";
-import { MusicPlayer } from "@/components/site/music-player";
+import { InvitationShell } from "@/components/site/invitation-shell";
 
 export default async function Home({
   searchParams,
@@ -28,44 +29,49 @@ export default async function Home({
     }),
   ]);
 
+  const receptionEvents = weddingConfig.events.slice(1);
+
   return (
-    <div className="flex-1">
-      <Hero guestName={guest?.name} />
-      <CoupleIntro />
-      <StoryTimeline />
-      <EventDetails />
-      <GalleryPreview images={images.map((i) => ({ id: i.id, url: i.url, caption: i.caption }))} />
+    <InvitationShell track={activeTrack ? { url: activeTrack.url, title: activeTrack.title } : null}>
+      <div className="flex-1">
+        <Hero guestName={guest?.name} />
+        <StoryTimeline />
+        <WeddingAnnouncement />
 
-      <section id="rsvp" className="px-4 py-16">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="font-script text-2xl text-rose-500">Xác nhận</p>
-          <h2 className="mt-2 font-heading text-3xl text-rose-800 sm:text-4xl">
-            Bạn sẽ đến chứ?
-          </h2>
-          <p className="mx-auto mt-3 max-w-md text-sm text-stone-600">
-            Mong bạn xác nhận giúp chúng mình để buổi tiệc được chu đáo nhất.
-          </p>
-          <div className="mx-auto my-6 h-px w-24 section-divider" />
-        </div>
+        {receptionEvents.map((event) => (
+          <ReceptionCard key={event.id} event={event} />
+        ))}
 
-        <div className="mx-auto max-w-md">
-          <RsvpForm
-            guestSlug={guest?.slug}
-            guestName={guest?.name}
-            maxCompanions={guest?.maxCompanions ?? 10}
+        <GalleryPreview images={images.map((i) => ({ id: i.id, url: i.url, caption: i.caption }))} />
+
+        <section id="rsvp" className="px-4 py-16">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="font-script text-2xl text-rose-500">Gửi yêu thương</p>
+            <h2 className="mt-2 font-heading text-3xl text-rose-800 sm:text-4xl">Sổ Lưu Bút</h2>
+            <p className="mx-auto mt-3 max-w-md text-sm text-stone-600">
+              Mong bạn xác nhận tham dự và để lại lời chúc cho chúng mình.
+            </p>
+            <div className="mx-auto my-6 h-px w-24 section-divider" />
+          </div>
+
+          <div className="mx-auto max-w-md">
+            <RsvpForm
+              guestSlug={guest?.slug}
+              guestName={guest?.name}
+              maxCompanions={guest?.maxCompanions ?? 10}
+            />
+          </div>
+
+          <WishesWall
+            wishes={wishes
+              .filter((w) => w.message)
+              .map((w) => ({ id: w.id, name: w.name, message: w.message as string, createdAt: w.createdAt }))}
           />
-        </div>
-      </section>
+        </section>
 
-      <WishesWall
-        wishes={wishes
-          .filter((w) => w.message)
-          .map((w) => ({ id: w.id, name: w.name, message: w.message as string, createdAt: w.createdAt }))}
-      />
-
-      <GiftBox />
-      <Footer />
-      <MusicPlayer track={activeTrack ? { url: activeTrack.url, title: activeTrack.title } : null} />
-    </div>
+        <GiftBox />
+        <Footer />
+      </div>
+    </InvitationShell>
   );
 }

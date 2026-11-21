@@ -6,15 +6,18 @@ import { submitRsvpAction, type RsvpActionState } from "@/app/rsvp/actions";
 
 const initialState: RsvpActionState = {};
 
+const inputClass =
+  "w-full rounded-lg border border-rose-300 bg-[var(--color-cream)] px-3 py-2 text-sm text-stone-700 outline-none placeholder:text-stone-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-100";
+
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <button
       type="submit"
       disabled={pending}
-      className="w-full rounded-full bg-rose-600 py-3 text-sm font-medium text-white shadow-md shadow-rose-200 transition hover:bg-rose-700 disabled:opacity-60"
+      className="w-full rounded-full bg-rose-700 py-3 text-sm font-medium uppercase tracking-wide text-[var(--color-cream)] shadow-md transition hover:bg-rose-800 disabled:opacity-60"
     >
-      {pending ? "Đang gửi..." : "Gửi phản hồi"}
+      {pending ? "Đang gửi..." : "Gửi lời chúc"}
     </button>
   );
 }
@@ -33,7 +36,7 @@ export function RsvpForm({
 
   if (state.success) {
     return (
-      <div className="rounded-2xl bg-white/80 p-8 text-center shadow-sm ring-1 ring-rose-100">
+      <div className="rounded-2xl bg-[var(--color-cream)] p-8 text-center shadow-md ring-1 ring-rose-100">
         <p className="font-script text-3xl text-rose-600">Cảm ơn bạn!</p>
         <p className="mt-2 text-sm text-stone-600">
           Chúng mình đã nhận được phản hồi của bạn. Hẹn gặp bạn trong ngày vui!
@@ -43,7 +46,10 @@ export function RsvpForm({
   }
 
   return (
-    <form action={formAction} className="space-y-4 rounded-2xl bg-white/80 p-6 shadow-sm ring-1 ring-rose-100 sm:p-8">
+    <form
+      action={formAction}
+      className="space-y-4 rounded-2xl bg-[var(--color-cream)] p-6 shadow-md ring-1 ring-rose-100 sm:p-8"
+    >
       {guestSlug && <input type="hidden" name="slug" value={guestSlug} />}
 
       <div>
@@ -56,8 +62,8 @@ export function RsvpForm({
           type="text"
           required
           defaultValue={guestName}
-          placeholder="Nhập họ tên của bạn"
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
+          placeholder="Nhập tên*"
+          className={inputClass}
         />
       </div>
 
@@ -65,13 +71,7 @@ export function RsvpForm({
         <label htmlFor="phone" className="mb-1 block text-sm font-medium text-stone-700">
           Số điện thoại <span className="text-stone-400">(không bắt buộc)</span>
         </label>
-        <input
-          id="phone"
-          name="phone"
-          type="tel"
-          placeholder="09xx xxx xxx"
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
-        />
+        <input id="phone" name="phone" type="tel" placeholder="09xx xxx xxx" className={inputClass} />
       </div>
 
       <div>
@@ -80,8 +80,8 @@ export function RsvpForm({
           <label
             className={`cursor-pointer rounded-lg border px-3 py-2 text-center text-sm transition ${
               answer === "ATTENDING"
-                ? "border-rose-500 bg-rose-50 text-rose-700"
-                : "border-stone-300 text-stone-600"
+                ? "border-rose-600 bg-rose-50 text-rose-700"
+                : "border-rose-200 text-stone-600"
             }`}
           >
             <input
@@ -97,8 +97,8 @@ export function RsvpForm({
           <label
             className={`cursor-pointer rounded-lg border px-3 py-2 text-center text-sm transition ${
               answer === "DECLINED"
-                ? "border-rose-500 bg-rose-50 text-rose-700"
-                : "border-stone-300 text-stone-600"
+                ? "border-rose-600 bg-rose-50 text-rose-700"
+                : "border-rose-200 text-stone-600"
             }`}
           >
             <input
@@ -126,7 +126,7 @@ export function RsvpForm({
             min={0}
             max={maxCompanions}
             defaultValue={0}
-            className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
+            className={inputClass}
           />
         </div>
       )}
@@ -139,8 +139,8 @@ export function RsvpForm({
           id="message"
           name="message"
           rows={3}
-          placeholder="Gửi lời chúc đến cô dâu chú rể..."
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
+          placeholder="Nhập lời chúc*"
+          className={inputClass}
         />
       </div>
 

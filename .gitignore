@@ -37,6 +37,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# ảnh gốc để tải thủ công lên admin — không commit, site dùng Vercel Blob
+/anhcuoi
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

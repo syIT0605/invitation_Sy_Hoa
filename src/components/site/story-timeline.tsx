@@ -1,6 +1,8 @@
 import { weddingConfig } from "@/lib/config";
 
 export function StoryTimeline() {
+  if (weddingConfig.coupleStory.length === 0) return null;
+
   return (
     <section className="bg-rose-50/60 px-4 py-16">
       <div className="mx-auto max-w-2xl text-center">

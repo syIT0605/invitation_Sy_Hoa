@@ -32,7 +32,10 @@ export default async function Home({
   const receptionEvents = weddingConfig.events.slice(1);
 
   return (
-    <InvitationShell track={activeTrack ? { url: activeTrack.url, title: activeTrack.title } : null}>
+    <InvitationShell
+      track={activeTrack ? { url: activeTrack.url, title: activeTrack.title } : null}
+      coverImage={images[0]?.url}
+    >
       <div className="flex-1">
         <Hero guestName={guest?.name} />
         <StoryTimeline />

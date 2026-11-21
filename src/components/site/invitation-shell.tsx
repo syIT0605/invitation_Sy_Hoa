@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Image from "next/image";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { AnimatePresence, motion } from "framer-motion";
@@ -11,9 +12,11 @@ import { FloralSpray } from "./floral-spray";
 export function InvitationShell({
   children,
   track,
+  coverImage,
 }: {
   children: React.ReactNode;
   track: { url: string; title: string } | null;
+  coverImage?: string;
 }) {
   const [opened, setOpened] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -69,9 +72,20 @@ export function InvitationShell({
                 mirrored
               />
 
-              <div className="relative mx-auto -mt-16 mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-rose-700 text-white shadow-lg">
-                <Heart size={18} fill="white" />
-              </div>
+              {coverImage ? (
+                <div className="relative mx-auto -mt-20 mb-5 h-28 w-28">
+                  <div className="relative h-full w-full overflow-hidden rounded-full shadow-lg ring-4 ring-[var(--color-cream)]">
+                    <Image src={coverImage} alt="Ảnh cưới" fill sizes="112px" className="object-cover" />
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-rose-700 text-white shadow">
+                    <Heart size={14} fill="white" />
+                  </div>
+                </div>
+              ) : (
+                <div className="relative mx-auto -mt-16 mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-rose-700 text-white shadow-lg">
+                  <Heart size={18} fill="white" />
+                </div>
+              )}
 
               <h1 className="font-heading text-3xl leading-tight text-rose-700">
                 {weddingConfig.groom.shortName}

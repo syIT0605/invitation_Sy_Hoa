@@ -1,18 +1,26 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import clsx from "clsx";
 import type { GalleryImageItem } from "./gallery-grid";
 
 const VISIBLE_RANGE = 2;
+const AUTOPLAY_MS = 3000;
 
 export function PhotoCoverflow({ images }: { images: GalleryImageItem[] }) {
   const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
   const count = images.length;
 
   const goTo = useCallback((i: number) => setIndex(((i % count) + count) % count), [count]);
+
+  useEffect(() => {
+    if (count <= 1 || paused) return;
+    const timer = setInterval(() => setIndex((i) => (i + 1) % count), AUTOPLAY_MS);
+    return () => clearInterval(timer);
+  }, [count, paused]);
 
   if (count === 0) {
     return (
@@ -23,7 +31,7 @@ export function PhotoCoverflow({ images }: { images: GalleryImageItem[] }) {
   }
 
   return (
-    <div>
+    <div onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
       <div className="relative mx-auto h-[360px] max-w-2xl sm:h-[400px]" style={{ perspective: "1200px" }}>
         {images.map((img, i) => {
           let offset = i - index;

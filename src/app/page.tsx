@@ -41,11 +41,11 @@ export default async function Home({
         <StoryTimeline />
         <WeddingAnnouncement />
 
+        <GalleryPreview images={images.map((i) => ({ id: i.id, url: i.url, caption: i.caption }))} />
+
         {receptionEvents.map((event) => (
           <ReceptionCard key={event.id} event={event} />
         ))}
-
-        <GalleryPreview images={images.map((i) => ({ id: i.id, url: i.url, caption: i.caption }))} />
 
         <section id="rsvp" className="px-4 py-16">
           <div className="mx-auto max-w-2xl text-center">

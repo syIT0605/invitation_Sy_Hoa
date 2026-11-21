@@ -30,12 +30,22 @@ export default async function Home({
   ]);
 
   // Lọc sự kiện theo "bên" của khách (Nhà trai / Nhà gái / Chung) — khách không
-  // có link riêng hoặc thuộc "Chung" sẽ thấy tất cả.
+  // có link riêng hoặc thuộc "Chung" sẽ thấy tất cả (cả 2 ngày).
   const guestSide = guest?.side ?? "BOTH";
   const visibleEvents = weddingConfig.events.filter(
     (e) => !e.side || e.side === "BOTH" || guestSide === "BOTH" || e.side === guestSide
   );
-  const [ceremonyEvent, ...receptionEvents] = visibleEvents;
+
+  // Mỗi "bên" (nhà gái / nhà trai) có 1 sự kiện lễ (card trang trọng) + các sự
+  // kiện tiệc (card lịch/bản đồ/RSVP) đi kèm. Khi khách thấy cả 2 bên, mỗi bên
+  // vẫn giữ đúng cặp lễ + tiệc riêng, chỉ dồn tất cả card tiệc xuống sau album ảnh.
+  const eventGroups = new Map<string, typeof visibleEvents>();
+  for (const event of visibleEvents) {
+    const key = event.side ?? "BOTH";
+    eventGroups.set(key, [...(eventGroups.get(key) ?? []), event]);
+  }
+  const ceremonyEvents = Array.from(eventGroups.values(), (group) => group[0]);
+  const receptionEvents = Array.from(eventGroups.values(), (group) => group.slice(1)).flat();
 
   return (
     <InvitationShell
@@ -45,7 +55,9 @@ export default async function Home({
       <div className="flex-1">
         <Hero guestName={guest?.name} heroImage={images[0]?.url} />
         <StoryTimeline />
-        <WeddingAnnouncement event={ceremonyEvent} />
+        {ceremonyEvents.map((event) => (
+          <WeddingAnnouncement key={event.id} event={event} />
+        ))}
 
         <GalleryPreview images={images.map((i) => ({ id: i.id, url: i.url, caption: i.caption }))} />
 

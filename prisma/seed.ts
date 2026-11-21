@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../src/lib/db";
 import { generateGuestSlug } from "../src/lib/slug";
-
-const prisma = new PrismaClient();
 
 const sampleGuests = [
   { name: "Nguyễn Văn Minh", side: "GROOM" as const, group: "Bạn đại học", maxCompanions: 1 },

@@ -28,6 +28,9 @@ Khách truy cập ──► Next.js App Router (Server Components)
 ## 2. Cấu trúc source code
 
 ```
+prisma.config.ts       # Cấu hình kết nối DB cho CLI (prisma db push/migrate) — Prisma 7 không
+                        # còn cho khai báo url trong schema.prisma nữa
+
 prisma/
   schema.prisma        # Guest, Rsvp, GalleryImage, MusicTrack (PostgreSQL)
   seed.ts              # Tạo vài khách mời mẫu
@@ -36,7 +39,7 @@ src/
   proxy.ts             # Bảo vệ toàn bộ /admin/* (trừ /admin/login)
   lib/
     config.ts          # Thông tin cô dâu/chú rể, ngày cưới, địa điểm — SỬA Ở ĐÂY
-    db.ts               # Prisma client singleton
+    db.ts               # Prisma client singleton (qua driver adapter @prisma/adapter-pg)
     auth.ts / session.ts  # Tạo & kiểm tra session admin (JWT)
     blob.ts             # Upload/xoá file trên Vercel Blob
     validations.ts      # Zod schema cho form RSVP, khách mời...
@@ -102,11 +105,13 @@ node -e "console.log(require('bcryptjs').hashSync('mat-khau-cua-ban', 10))"
 
 ### 3.3. Database
 
-Cần một PostgreSQL (xem phần Vercel Postgres/Neon ở mục 4). Sau khi có `DATABASE_URL`:
+Cần một PostgreSQL — cách nhanh nhất là dùng chính "Prisma Postgres" đã tạo trên Vercel (mục 4), rồi kéo biến môi trường về:
 
 ```bash
-npm run db:push     # tạo bảng theo prisma/schema.prisma
-npm run db:seed      # (tuỳ chọn) tạo khách mời mẫu
+npx vercel link              # nối project local với project Vercel
+npx vercel env pull .env     # tải DATABASE_URL, DATABASE_URL_POOLED,... về .env
+npm run db:push               # tạo bảng theo prisma/schema.prisma
+npm run db:seed                # (tuỳ chọn) tạo khách mời mẫu
 ```
 
 ### 3.4. Chạy dev server
@@ -135,10 +140,10 @@ git push -u origin main
 1. Vào https://vercel.com/new, import repo vừa push.
 2. Framework Preset: **Next.js** (tự nhận diện).
 
-### Bước 3 — Tạo Postgres
+### Bước 3 — Tạo Database
 
-1. Trong project Vercel → tab **Storage** → **Create Database** → chọn **Postgres** (Neon).
-2. Sau khi tạo, Vercel tự thêm `DATABASE_URL`/`DATABASE_URL_UNPOOLED` (hoặc tên tương đương) vào **Environment Variables** của project — kiểm tra tên biến khớp với `prisma/schema.prisma` (`DATABASE_URL`, `DATABASE_URL_UNPOOLED`); đổi tên nếu Vercel sinh ra biến khác tên.
+1. Trong project Vercel → tab **Storage** → **Create Database** → chọn **Prisma Postgres**.
+2. Sau khi tạo, Vercel tự thêm 4 biến vào **Environment Variables**: `DATABASE_URL`, `DATABASE_URL_POOLED`, `POSTGRES_URL`, `PRISMA_DATABASE_URL`. Dự án chỉ dùng 2 biến đầu (`prisma.config.ts` và `src/lib/db.ts`) — không cần đụng tới 2 biến còn lại.
 
 ### Bước 4 — Tạo Vercel Blob
 
@@ -161,14 +166,13 @@ Nhấn **Deploy**. Vercel sẽ tự chạy `npm run build`, trong đó script `b
 
 ### Bước 7 — Tạo bảng trong database production
 
-Sau lần deploy đầu tiên, chạy migrate từ máy local (đã có Vercel CLI và đã `vercel link` + `vercel env pull`):
+Sau lần deploy đầu tiên, chạy từ máy local:
 
 ```bash
-vercel env pull .env.production.local
-npx prisma db push --schema prisma/schema.prisma
+npx vercel link
+npx vercel env pull .env
+npm run db:push
 ```
-
-(hoặc copy `DATABASE_URL` production vào `.env` tạm thời rồi chạy `npm run db:push`).
 
 ### Bước 8 — Tuỳ biến nội dung
 
@@ -180,6 +184,7 @@ npx prisma db push --schema prisma/schema.prisma
 
 ## 5. Các điểm kỹ thuật cần biết
 
+- **Prisma 7 đổi cách khai báo kết nối DB**: `schema.prisma` không còn `url`/`directUrl`. CLI (`db push`, `migrate`, `studio`) đọc kết nối từ `prisma.config.ts` (biến `DATABASE_URL`, trực tiếp — không pooled). Runtime (`src/lib/db.ts`) dùng driver adapter `@prisma/adapter-pg` với `DATABASE_URL_POOLED` (fallback `DATABASE_URL`) — phù hợp serverless function nhiều connection ngắn hạn.
 - **`experimental.serverActions.bodySizeLimit`** trong `next.config.ts` được đặt `25mb` để cho phép upload ảnh (giới hạn 8MB) và nhạc (giới hạn 20MB) qua Server Actions — mặc định Next.js chỉ cho 1MB.
 - **`images.remotePatterns`** cho phép `next/image` tối ưu ảnh từ domain Vercel Blob (`*.public.blob.vercel-storage.com`).
 - **`src/proxy.ts`** (không phải `middleware.ts`) — quy ước mới từ Next.js 16; chỉ áp dụng cho `/admin/:path*`.

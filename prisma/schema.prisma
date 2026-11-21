@@ -1,14 +1,16 @@
 // Prisma schema cho website thiệp cưới online
-// Datasource: PostgreSQL (khuyến nghị dùng Vercel Postgres / Neon khi deploy lên Vercel)
+// Datasource: PostgreSQL (Vercel "Prisma Postgres" storage)
+//
+// Kể từ Prisma 7, connection URL KHÔNG khai báo ở đây nữa — xem:
+//   - prisma.config.ts (dùng cho CLI: db push / migrate)
+//   - src/lib/db.ts     (dùng cho runtime qua driver adapter @prisma/adapter-pg)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DATABASE_URL_UNPOOLED")
+  provider = "postgresql"
 }
 
 enum GuestSide {

@@ -1,0 +1,82 @@
+// Prisma schema cho website thiệp cưới online
+// Datasource: PostgreSQL (khuyến nghị dùng Vercel Postgres / Neon khi deploy lên Vercel)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+enum GuestSide {
+  GROOM // Nhà trai
+  BRIDE // Nhà gái
+  BOTH // Chung
+}
+
+enum RsvpAnswer {
+  PENDING // Chưa phản hồi
+  ATTENDING // Sẽ tham dự
+  DECLINED // Không thể tham dự
+}
+
+/// Khách mời được admin thêm sẵn, có link thiệp riêng (invite code)
+model Guest {
+  id            String     @id @default(cuid())
+  name          String
+  phone         String?
+  side          GuestSide  @default(BOTH)
+  group         String? // ví dụ: "Bạn đại học", "Đồng nghiệp", "Gia đình"
+  slug          String     @unique // mã định danh dùng trong link /rsvp/[slug]
+  maxCompanions Int        @default(1) // số người đi kèm tối đa được phép khai báo
+  note          String?
+  invitedAt     DateTime?
+  rsvp          Rsvp?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([side])
+}
+
+/// Phản hồi RSVP - có thể gắn với Guest (link cá nhân hoá) hoặc tự do (form chung)
+model Rsvp {
+  id          String     @id @default(cuid())
+  guestId     String?    @unique
+  guest       Guest?     @relation(fields: [guestId], references: [id], onDelete: SetNull)
+  name        String
+  phone       String?
+  answer      RsvpAnswer @default(PENDING)
+  companions  Int        @default(0) // số người đi kèm
+  message     String? // lời chúc / lời nhắn
+  side        GuestSide  @default(BOTH)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([answer])
+  @@index([createdAt])
+}
+
+/// Ảnh trong thư viện ảnh cưới
+model GalleryImage {
+  id        String   @id @default(cuid())
+  url       String
+  pathname  String // đường dẫn lưu trên Vercel Blob, dùng để xoá
+  caption   String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([order])
+}
+
+/// Nhạc nền phát trong thiệp cưới
+model MusicTrack {
+  id        String   @id @default(cuid())
+  title     String
+  url       String
+  pathname  String
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

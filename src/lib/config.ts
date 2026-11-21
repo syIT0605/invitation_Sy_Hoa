@@ -46,13 +46,15 @@ export const weddingConfig = {
   // Các sự kiện sau = tiệc cưới (có lịch, bản đồ, nút xác nhận tham dự).
   events: [
     {
-      id: "nha-gai",
-      title: "Lễ Vu Quy",
-      description: "Nhà gái tổ chức tiệc mừng",
-      date: "2026-12-12T12:00:00+07:00",
-      venueName: "Tư gia nhà gái",
-      address: "Thôn 01, xã EaWer, tỉnh Đăk Lăk",
-      mapUrl: "https://maps.app.goo.gl/WJt58bfWbpJiziue9",
+      id: "nha-trai",
+      title: "Lễ Thành Hôn",
+      description: "Nhà trai tổ chức tiệc mừng",
+      date: "2026-12-14T12:00:00+07:00",
+      venueName: "Tư gia nhà trai",
+      address: "Thôn 16a, xã Ea Nuôl, tỉnh Đăk Lăk",
+      mapUrl: "https://maps.app.goo.gl/EA6W4HES3qypRnng7",
+      // address: "Thôn 01, xã EaWer, tỉnh Đăk Lăk",
+      // mapUrl: "https://maps.app.goo.gl/WJt58bfWbpJiziue9",
     },
     {
       id: "nha-trai-tiec",

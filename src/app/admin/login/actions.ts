@@ -39,7 +39,15 @@ export async function loginAction(
     return { error: "Tên đăng nhập hoặc mật khẩu không đúng." };
   }
 
-  const token = await createAdminSessionToken(parsed.data.username);
+  let token: string;
+  try {
+    token = await createAdminSessionToken(parsed.data.username);
+  } catch {
+    return {
+      error: "Hệ thống chưa được cấu hình SESSION_SECRET (cần chuỗi ngẫu nhiên tối thiểu 16 ký tự).",
+    };
+  }
+
   const store = await cookies();
   store.set(ADMIN_SESSION_COOKIE, token, {
     httpOnly: true,
